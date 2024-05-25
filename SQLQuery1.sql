@@ -51,11 +51,23 @@ INSERT INTO movies (title, RealeaseDate, directorId, actorsId, genresId,imdbiPoi
 
  DELETE FROM movies where imdbiPoint is null
 
-SELECT m.title AS MovieTitle, m.RealeaseDate AS ReleaseDate, 
-       directors.FullName AS DirectorName, directors.BornTime AS DirectorBornTime,
-       a.fullName AS ActorName, a.BornTime AS ActorBornTime,
-       g.Name AS GenreName
-FROM movies m
+SELECT * movies m
 INNER JOIN directors ON directors.id = m.directorId
 INNER JOIN actors a ON a.id = m.actorsId
 INNER JOIN genres g ON g.id = m.genresId;
+SELECT m.title AS MovieTitle, m.imdbiPoint AS IMDbRating, g.Name AS GenreName
+FROM movies m
+INNER JOIN genres g ON g.id = m.genresId
+WHERE g.Name LIKE '%a%';
+SELECT m.title AS MovieTitle, m.imdbiPoint AS IMDbRating, LEN(m.title) AS TitleLength, g.Name AS GenreName
+FROM movies m
+INNER JOIN genres g ON g.id = m.genresId
+WHERE LEN(m.title) > 10 AND RIGHT(m.title, 1) = 't';
+SELECT m.*, directors.FullName AS DirectorName, a.fullName AS ActorName, g.Name AS GenreName
+FROM movies m
+INNER JOIN directors ON directors.id = m.directorId
+INNER JOIN actors a ON a.id = m.actorsId
+INNER JOIN genres g ON g.id = m.genresId 
+WHERE m.imdbiPoint > (
+    SELECT AVG(imdbiPoint) FROM movies
+) ORDER BY m.imdbiPoint DESC;
